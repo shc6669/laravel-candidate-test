@@ -13,15 +13,15 @@ use Vanguard\TOrders;
 use Vanguard\TOrdersDetail;
 use DataTables;
 
-class CarsManagementController extends Controller
+class CandidateController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('permission:cars.create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:cars.edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:cars.list.show', ['only' => ['index', 'show']]);
-        $this->middleware('permission:cars.destroy', ['only' => 'destroy']);
+        $this->middleware('permission:candidate.create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:candidate.edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:candidate.list.show', ['only' => ['index', 'show']]);
+        $this->middleware('permission:candidate.destroy', ['only' => 'destroy']);
     }
 
     public function getOrders()

@@ -195,29 +195,16 @@ Route::group(['middleware' => ['auth', 'verified'], 'prefix' => "admin"], functi
     });
 
     /**
-     * Cars Management & Orders
+     * Candidate Management
      */
-    Route::resource('orders', 'CarsManagementController');
-    Route::get('orders/datatable/tborders', [
-        'as' => 'get.orders',
-        'uses' => 'CarsManagementController@getOrders'
+    Route::resource('candidate-management', 'CandidateController');
+    Route::get('candidate-management/datatable/tbcandidate', [
+        'as' => 'get.candidate',
+        'uses' => 'CandidateController@getOrders'
     ]);
-    Route::get('orders/html/{index}', [
+    Route::get('candidate-management/html/{index}', [
         'as' => 'orders.html.details',
-        'uses' => 'CarsManagementController@addDetail'
-    ]);
-
-    /**
-     * Jobs Management
-     */
-    Route::resource('jobs', 'JobsManagemenController')->only(['index', 'show']);
-    Route::get('jobs/datatable/tbjobs', [
-        'as' => 'get.jobs',
-        'uses' => 'JobsManagemenController@getJobs'
-    ]);
-    Route::post('jobs/changeStatus/{job_id}', [
-        'as' => 'change.status',
-        'uses' => 'JobsManagemenController@changeStatus'
+        'uses' => 'CandidateController@addDetail'
     ]);
 });
 

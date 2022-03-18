@@ -12,17 +12,17 @@ class Settings extends Plugin
     {
         $general = Item::create(__('General'))
             ->route('settings.general')
-            ->active("settings")
+            ->active("admin/settings")
             ->permissions('settings.general');
 
         $authAndRegistration = Item::create(__('Auth & Registration'))
             ->route('settings.auth')
-            ->active("settings/auth")
+            ->active("admin/settings/auth")
             ->permissions('settings.auth');
 
         $notifications = Item::create(__('Notifications'))
             ->route('settings.notifications')
-            ->active("settings/notifications")
+            ->active("admin/settings/notifications")
             ->permissions(function (User $user) {
                 return $user->hasPermission('settings.notifications');
             });
