@@ -1,6 +1,7 @@
 ## Vanguard - Advanced PHP (Laravel) Login and User Management
 
 - Developed and Crafted by [Chandrayana Putra]
+- Laravel Version (8.52.0)
 
 # How to use
 - Download or clone this repo
@@ -14,19 +15,19 @@
 - This backend feature also can use it to input the data as well.
 - The link for backend : http:localhost:8000/login
 
-Admin Role
+Superadmin Role
 - Use this credentials for admin role:
 - username: admin
 - password: admin123
 
-User Role
+ Admin HRD Role
 - Use this credentials for user role:
-- username: chandra / arsya
+- username: keanu
 - password: password123
 
-Mechanics Role
+HRD Role
 - Use this credentials for user role:
-- username: john.wick / keanu
+- username: john.wick
 - password: password123
 
 # API Documentation
