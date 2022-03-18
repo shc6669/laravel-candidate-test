@@ -17,4 +17,12 @@ class SkillsCreatedUpdatedRequest extends Request
             'name'  => 'required|unique:m_skills,name'
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'name.required'    => 'Name is required',
+            'name.unique'      => 'This name has already registered to system, please input others'
+        ];
+    }
 }

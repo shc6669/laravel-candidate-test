@@ -44,7 +44,7 @@
                    name="address" placeholder="@lang('Address')" value="{{ $edit ? $user->address : '' }}">
         </div>
         <div class="form-group">
-            <label for="address">@lang('Country')</label>
+            <label for="country_id">@lang('Country')</label>
             {!! Form::select('country_id', $countries, $edit ? $user->country_id : '', 
                 ['class' => 'form-control input-solid', 'id' => 'country_id']) !!}
         </div>

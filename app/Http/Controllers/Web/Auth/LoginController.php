@@ -120,7 +120,8 @@ class LoginController extends Controller
 
         Toastr::success('Glad to see you','Welcome '.$user->first_name.' '.$user->last_name.'');
 
-        return redirect()->intended();
+        // return redirect()->intended();
+        return redirect()->route('dashboard');
     }
 
     /**

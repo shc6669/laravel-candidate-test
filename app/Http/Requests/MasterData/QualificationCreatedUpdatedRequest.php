@@ -4,7 +4,7 @@ namespace Vanguard\Http\Requests\MasterData;
 
 use Vanguard\Http\Requests\Request;
 
-class MechanicsCreatedUpdatedRequest extends Request
+class QualificationCreatedUpdatedRequest extends Request
 {
     /**
      * Get the validation rules that apply to the request.
@@ -14,15 +14,15 @@ class MechanicsCreatedUpdatedRequest extends Request
     public function rules()
     {
         return [
-            'user_id' => 'required|unique:m_mechanics,user_id'
+            'name' => 'required|unique:m_education_qualification,name',
         ];
     }
 
     public function messages()
     {
         return [
-            'user_id.required'  => 'Mechanic is required',
-            'user_id.unique'    => 'This mechanic has already selected. Please select other'
+            'name.required'    => 'Name is required',
+            'name.unique'      => 'This name has already registered to system, please input others'
         ];
     }
 }

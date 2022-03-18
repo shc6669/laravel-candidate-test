@@ -9,19 +9,14 @@ class MasterData extends Plugin
 {
     public function sidebar()
     {
-        $cars = Item::create(__('Cars'))
-            ->route('cars.index')
-            ->active('master-data/cars*')
-            ->permissions('master-data.manage');
-
-        $mechanics = Item::create(__('Mechanics'))
-            ->route('mechanics.index')
-            ->active('master-data/mechanics*')
-            ->permissions('master-data.manage');
-
         $skills = Item::create(__('Skills'))
             ->route('skills.index')
-            ->active('master-data/skills*')
+            ->active('admin/master-data/skills*')
+            ->permissions('master-data.manage');
+
+        $qualifications = Item::create(__('Education Qualifications'))
+            ->route('qualifications.index')
+            ->active('admin/master-data/qualifications*')
             ->permissions('master-data.manage');
 
         return Item::create(__('Master Data'))
@@ -29,9 +24,8 @@ class MasterData extends Plugin
             ->icon('fas fa-database')
             ->permissions(['master-data.manage'])
             ->addChildren([
-                $cars,
-                $mechanics,
-                $skills
+                $skills,
+                $qualifications
             ]);
     }
 }

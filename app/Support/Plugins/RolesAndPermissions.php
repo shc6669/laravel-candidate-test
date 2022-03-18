@@ -11,12 +11,12 @@ class RolesAndPermissions extends Plugin
     {
         $roles = Item::create(__('Roles'))
             ->route('roles.index')
-            ->active("roles*")
+            ->active("admin/roles*")
             ->permissions('roles.manage');
 
         $permissions = Item::create(__('Permissions'))
             ->route('permissions.index')
-            ->active("permissions*")
+            ->active("admin/permissions*")
             ->permissions('permissions.manage');
 
         return Item::create(__('Roles & Permissions'))

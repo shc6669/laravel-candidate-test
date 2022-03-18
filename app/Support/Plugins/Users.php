@@ -12,7 +12,7 @@ class Users extends Plugin
         return Item::create(__('Users'))
             ->route('users.index')
             ->icon('fas fa-users')
-            ->active("users*")
+            ->active("admin/users*")
             ->permissions('users.manage');
     }
 }

@@ -182,15 +182,10 @@ Route::group(['middleware' => ['auth', 'verified'], 'prefix' => "admin"], functi
      * Master Data
      */
     Route::group(['prefix' => 'master-data', 'namespace' => 'MasterData'], function () {
-        Route::resource('cars', 'CarsController')->except('show');
-        Route::get('cars/tbcars', [
-            'as' => 'get.cars',
-            'uses' => 'CarsController@getCars'
-        ]);
-        Route::resource('mechanics', 'MechanicsController')->except('show');
-        Route::get('mechanics/tbmechanics', [
-            'as' => 'get.mechanics',
-            'uses' => 'MechanicsController@getMechanics'
+        Route::resource('qualifications', 'QualificationController')->except('show');
+        Route::get('qualifications/tbqualification', [
+            'as' => 'get.qualification',
+            'uses' => 'QualificationController@getQualification'
         ]);
         Route::resource('skills', 'SkillsController')->except('show');
         Route::get('skills/tbskills', [
