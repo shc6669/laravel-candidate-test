@@ -39,7 +39,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::impersonate();
 });
 
-Route::group(['middleware' => ['auth', 'verified']], function () {
+Route::group(['middleware' => ['auth', 'verified'], 'prefix' => "admin"], function () {
     /**
      * Dashboard
      */
@@ -225,3 +225,9 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
         'uses' => 'JobsManagemenController@changeStatus'
     ]);
 });
+
+// Frontend
+Route::get('/', [
+    'as' => 'home.front',
+    'uses' => 'FrontEndController@index'
+]);
