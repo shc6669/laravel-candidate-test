@@ -125,7 +125,7 @@
 
     <script>
         $(document).ready(function() {
-            $("#country_id").select2({"allowClear":true,"placeholder":{"id":"","text":"{{ 'Please Select Option' }}"}});
+            $("#country_id, #status, #role_id").select2({"allowClear":true,"placeholder":{"id":"","text":"{{ 'Please Select Option' }}"}});
         });
     </script>
 @stop

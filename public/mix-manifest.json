@@ -1,4 +1,5 @@
 {
-    "/assets/js/vendor.js": "/assets/js/vendor.js",
-    "/assets/css/vendor.css": "/assets/css/vendor.css"
+    "/assets/css/app.css": "/assets/css/app.css?id=1edcccb518d48b093769",
+    "/assets/js/vendor.js": "/assets/js/vendor.js?id=c1d2e4738e1204568cb2",
+    "/assets/css/vendor.css": "/assets/css/vendor.css?id=b652c76946187570fa20"
 }
