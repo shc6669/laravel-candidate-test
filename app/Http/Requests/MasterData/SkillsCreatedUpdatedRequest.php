@@ -4,7 +4,7 @@ namespace Vanguard\Http\Requests\MasterData;
 
 use Vanguard\Http\Requests\Request;
 
-class ServicesCreatedUpdatedRequest extends Request
+class SkillsCreatedUpdatedRequest extends Request
 {
     /**
      * Get the validation rules that apply to the request.
@@ -14,8 +14,7 @@ class ServicesCreatedUpdatedRequest extends Request
     public function rules()
     {
         return [
-            'name'  => 'required',
-            'price' => 'required'
+            'name'  => 'required|unique:m_skills,name'
         ];
     }
 }

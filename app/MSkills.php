@@ -5,13 +5,13 @@ namespace Vanguard;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MServices extends Model
+class MSkills extends Model
 {
     use HasFactory;
 
-    protected $table = "m_services";
+    protected $table = "m_skills";
 
-    protected $fillable = ['name', 'price'];
+    protected $fillable = ['name'];
 
     protected $guarded = [];
 }

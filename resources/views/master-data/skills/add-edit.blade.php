@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('page-title', 'Manage Master Data')
-@section('page-heading', $edit ? $service->name : 'Manage Master Data - Services')
+@section('page-heading', $edit ? $skills->name : 'Manage Master Data - Skills')
 
 @section('breadcrumbs')
     <li class="breadcrumb-item">
-        <a href="{{ route('services.index') }}">@lang('Services')</a>
+        <a href="{{ route('skills.index') }}">@lang('Skills')</a>
     </li>
     <li class="breadcrumb-item active">
         {{ $edit ? 'Edit Data' : 'Create Data' }}
@@ -17,21 +17,21 @@
 @include('partials.messages')
 
 @if($edit)
-    {!! Form::open(['route' => ['services.update', $service->id], 'method' => 'PUT', 'id' => 'service-form']) !!}
+    {!! Form::open(['route' => ['skills.update', $skills->id], 'method' => 'PUT', 'id' => 'skills-form']) !!}
 @else
-    {!! Form::open(['route' => 'services.store', 'id' => 'service-form']) !!}
+    {!! Form::open(['route' => 'skills.store', 'id' => 'skills-form']) !!}
 @endif
 
-<input type="hidden" name="id" value="{{ $edit ? $service->id : null }}">
+<input type="hidden" name="id" value="{{ $edit ? $skills->id : null }}">
 
 <div class="card">
     <div class="card-body">
         <div class="row">
             <div class="col-md-3">
                 <h5 class="card-title">
-                    @lang('Services')
+                    @lang('Skills')
                 </h5>
-                <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip" title="Back" onclick="window.location.href='{{ route('services.index') }}'">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip" title="Back" onclick="window.location.href='{{ route('skills.index') }}'">
                     <span>
                         <i class="fa fa-arrow-left"></i> Back
                     </span>
@@ -41,12 +41,7 @@
                 <div class="form-group">
                     <label for="name">@lang('Name')</label>
                     <input type="text" class="form-control" id="name"
-                           name="name" placeholder="@lang('Please input name')" value="{{ $edit ? $service->name : old('name') }}">
-                </div>
-                <div class="form-group">
-                    <label for="price">@lang('Price')</label>
-                    <input type="number" class="form-control" id="price"
-                           name="price" placeholder="@lang('Please input price')" value="{{ $edit ? $service->price : old('price') }}">
+                           name="name" placeholder="@lang('Please input name')" value="{{ $edit ? $skills->name : old('name') }}">
                 </div>
             </div>
         </div>
@@ -66,5 +61,5 @@
 @stop
 
 @section('scripts')
-    {!! JsValidator::formRequest('Vanguard\Http\Requests\MasterData\ServicesCreatedUpdatedRequest', '#service-form') !!}
+    {!! JsValidator::formRequest('Vanguard\Http\Requests\MasterData\SkillsCreatedUpdatedRequest', '#skills-form') !!}
 @stop

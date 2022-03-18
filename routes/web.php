@@ -192,10 +192,10 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
             'as' => 'get.mechanics',
             'uses' => 'MechanicsController@getMechanics'
         ]);
-        Route::resource('services', 'ServicesController')->except('show');
-        Route::get('services/tbservices', [
-            'as' => 'get.services',
-            'uses' => 'ServicesController@getServices'
+        Route::resource('skills', 'SkillsController')->except('show');
+        Route::get('skills/tbskills', [
+            'as' => 'get.skills',
+            'uses' => 'SkillsController@getSkills'
         ]);
     });
 

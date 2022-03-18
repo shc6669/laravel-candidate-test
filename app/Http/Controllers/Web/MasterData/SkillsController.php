@@ -3,11 +3,11 @@
 namespace Vanguard\Http\Controllers\Web\MasterData;
 
 use Vanguard\Http\Controllers\Controller;
-use Vanguard\Http\Requests\MasterData\ServicesCreatedUpdatedRequest;
-use Vanguard\MServices;
+use Vanguard\Http\Requests\MasterData\SkillsCreatedUpdatedRequest;
+use Vanguard\MSkills;
 use DataTables;
 
-class ServicesController extends Controller
+class SkillsController extends Controller
 {
     public function __construct()
     {
@@ -15,26 +15,25 @@ class ServicesController extends Controller
         $this->middleware('permission:master-data.manage');
     }
 
-    public function getServices()
+    public function getSkills()
     {
-        $queries = MServices::get();
+        $queries = MSkills::get();
 
-        $services = [];
+        $skills = [];
         foreach($queries as $query)
         {
-            $services[] = [
+            $skills[] = [
                 'id'    => $query->id,
-                'name'  => $query->name,
-                'price' => 'Rp '.$query->price
+                'name'  => $query->name
             ];
         }
 
-        return DataTables::of($services)
+        return DataTables::of($skills)
         ->addIndexColumn()
-        ->addColumn('action', function($services) {
+        ->addColumn('action', function($skills) {
             $edit = '
-                <a data-toggle="tooltip" title="Edit Data" href="'.route('services.edit',['service' => $services['id']]).'" class="btn btn-outline-info btn-sm"><i class="fas fa-edit"></i></a>
-                <a data-toggle="tooltip" data-placement="top" data-method="DELETE" data-confirm-title="Confirm" data-confirm-text="Are you sure to delete this data?" data-confirm-delete="Delete" title="Delete" href="'.route('services.destroy',['service' => $services['id']]).'" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></a>
+                <a data-toggle="tooltip" title="Edit Data" href="'.route('skills.edit',['skill' => $skills['id']]).'" class="btn btn-outline-info btn-sm"><i class="fas fa-edit"></i></a>
+                <a data-toggle="tooltip" data-placement="top" data-method="DELETE" data-confirm-title="Confirm" data-confirm-text="Are you sure to delete this data?" data-confirm-delete="Delete" title="Delete" href="'.route('skills.destroy',['skill' => $skills['id']]).'" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></a>
             ';
             return $edit;
         })
@@ -49,7 +48,7 @@ class ServicesController extends Controller
      */
     public function index()
     {
-        return view('master-data.services.index');
+        return view('master-data.skills.index');
     }
 
     /**
@@ -61,7 +60,7 @@ class ServicesController extends Controller
     {
         $edit = false;
 
-        return view('master-data.services.add-edit', compact('edit'));
+        return view('master-data.skills.add-edit', compact('edit'));
     }
 
     /**
@@ -70,12 +69,12 @@ class ServicesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ServicesCreatedUpdatedRequest $request)
+    public function store(SkillsCreatedUpdatedRequest $request)
     {
         $inputs = $request->all();
-        MServices::create($inputs);
+        MSkills::create($inputs);
 
-        return redirect()->route('services.index')
+        return redirect()->route('skills.index')
             ->withSuccess('Success submited data');
     }
 
@@ -88,9 +87,9 @@ class ServicesController extends Controller
     public function edit($id)
     {
         $edit = true;
-        $service = MServices::findOrFail($id);
+        $skills = MSkills::findOrFail($id);
 
-        return view('master-data.services.add-edit', compact('edit', 'service'));
+        return view('master-data.skills.add-edit', compact('edit', 'skills'));
     }
 
     /**
@@ -100,10 +99,10 @@ class ServicesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ServicesCreatedUpdatedRequest $request, $id)
+    public function update(SkillsCreatedUpdatedRequest $request, $id)
     {
         $inputs = $request->all();
-        $service = MServices::find($id);
+        $service = MSkills::find($id);
         $service->update($inputs);
 
         return redirect()->back()
@@ -118,10 +117,10 @@ class ServicesController extends Controller
      */
     public function destroy($id)
     {
-        $service = MServices::findOrFail($id);
+        $service = MSkills::findOrFail($id);
         $service->delete();
 
-        return redirect()->route('services.index')
+        return redirect()->route('skills.index')
             ->withSuccess('Data deleted!');
     }
 }

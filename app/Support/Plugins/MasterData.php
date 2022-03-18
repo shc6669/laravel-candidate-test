@@ -19,9 +19,9 @@ class MasterData extends Plugin
             ->active('master-data/mechanics*')
             ->permissions('master-data.manage');
 
-        $services = Item::create(__('Services'))
-            ->route('services.index')
-            ->active('master-data/services*')
+        $skills = Item::create(__('Skills'))
+            ->route('skills.index')
+            ->active('master-data/skills*')
             ->permissions('master-data.manage');
 
         return Item::create(__('Master Data'))
@@ -31,7 +31,7 @@ class MasterData extends Plugin
             ->addChildren([
                 $cars,
                 $mechanics,
-                $services
+                $skills
             ]);
     }
 }
