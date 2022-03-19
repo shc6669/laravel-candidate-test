@@ -50,7 +50,7 @@ Route::group(['middleware' => ['auth', 'verified'], 'prefix' => "admin"], functi
      */
     Route::group(['prefix' => 'profile', 'namespace' => 'Profile'], function () {
         Route::get('/', 'ProfileController@show')->name('profile');
-        Route::get('activity', 'ActivityController@show')->name('profile.activity');
+        // Route::get('activity', 'ActivityController@show')->name('profile.activity');
         Route::put('details', 'DetailsController@update')->name('profile.update.details');
 
         Route::post('avatar', 'AvatarController@update')->name('profile.update.avatar');
@@ -172,11 +172,11 @@ Route::group(['middleware' => ['auth', 'verified'], 'prefix' => "admin"], functi
     /**
      * Activity Log
      */
-    Route::get('activity', 'ActivityController@index')->name('activity.index')
-        ->middleware('permission:users.activity');
+    // Route::get('activity', 'ActivityController@index')->name('activity.index')
+    //     ->middleware('permission:users.activity');
 
-    Route::get('activity/user/{user}/log', 'Users\ActivityController@index')->name('activity.user')
-        ->middleware('permission:users.activity');
+    // Route::get('activity/user/{user}/log', 'Users\ActivityController@index')->name('activity.user')
+    //     ->middleware('permission:users.activity');
 
     /**
      * Master Data
@@ -200,11 +200,15 @@ Route::group(['middleware' => ['auth', 'verified'], 'prefix' => "admin"], functi
     Route::resource('candidate-management', 'CandidateController');
     Route::get('candidate-management/datatable/tbcandidate', [
         'as' => 'get.candidate',
-        'uses' => 'CandidateController@getOrders'
+        'uses' => 'CandidateController@getData'
     ]);
-    Route::get('candidate-management/html/{index}', [
-        'as' => 'orders.html.details',
-        'uses' => 'CandidateController@addDetail'
+    Route::get('candidate-management/tag-skills/{id}', [
+        'as' => 'get.tag-skills',
+        'uses' => 'CandidateController@getTagSkills'
+    ]);
+    Route::post('candidate-management/delete-file/{id}', [
+        'as' => 'delete.file',
+        'uses' => 'CandidateController@destroyFileResume'
     ]);
 });
 

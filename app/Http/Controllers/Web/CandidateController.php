@@ -3,15 +3,15 @@
 namespace Vanguard\Http\Controllers\Web;
 
 use Vanguard\Http\Controllers\Controller;
-use Vanguard\Http\Requests\Orders\CreateRequest;
-use Vanguard\Http\Requests\Orders\UpdateRequest;
-use Vanguard\MCars;
-use Vanguard\MMechanics;
-use Vanguard\MServices;
-use Vanguard\TJobs;
-use Vanguard\TOrders;
-use Vanguard\TOrdersDetail;
+use Vanguard\Http\Requests\Candidate\CreateRequest;
+use Vanguard\Http\Requests\Candidate\UpdateRequest;
+use Vanguard\Country;
+use Vanguard\CandidateSkills;
+use Vanguard\MSkills;
+use Vanguard\MQualification;
+use Vanguard\TCandidate;
 use DataTables;
+use File;
 
 class CandidateController extends Controller
 {
@@ -24,96 +24,48 @@ class CandidateController extends Controller
         $this->middleware('permission:candidate.destroy', ['only' => 'destroy']);
     }
 
-    public function getOrders()
+    public function getData()
     {
-        if(auth()->user()->hasRole('Admin'))
+        $queries = TCandidate::latest();
+
+        $datas = [];
+        foreach($queries as $query)
         {
-            $queries = TOrders::with('car.user')->get();
-
-            $orders = [];
-            foreach($queries as $query)
-            {
-                $orders[] = [
-                    'id'            => $query->id,
-                    'licence_plate' => $query->car->licence_plate,
-                    'car_name'      => $query->car->name,
-                    'car_owner'     => $query->car->user->first_name.' '.$query->car->user->last_name,
-                    'car_status'    => $query->status
-                ];
-            }
-
-            return DataTables::of($orders)
-            ->addIndexColumn()
-            ->addColumn('car_status', function($orders) {
-                $array = [
-                    "1" => '<span class="badge badge-pill badge-info"> <i class="fas fa-exclamation-triangle"></i> Processing</span>',
-                    "2" => '<span class="badge badge-pill badge-success"> <i class="fas fa-check-square"></i> Completed</span>'
-                ];
-                $fa_active = @$array[$orders['car_status']] ?: null;
-
-                return $fa_active;
-            })
-            ->addColumn('action', function($orders) {
-                $edit = '
-                    <a data-toggle="tooltip" title="Edit Data" href="'.route('orders.edit',['order' => $orders['id']]).'" class="btn btn-outline-info btn-sm"><i class="fas fa-edit"></i></a>
-                    <a data-toggle="tooltip" data-placement="top" data-method="DELETE" data-confirm-title="Confirm" data-confirm-text="Are you sure to delete this data?" data-confirm-delete="Delete" title="Delete" href="'.route('orders.destroy',['order' => $orders['id']]).'" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></a>
-                ';
-                return $edit;
-            })
-            ->rawColumns(['car_status', 'action'])
-            ->toJson();
+            $datas[] = [
+                'id'            => $query->id,
+                'name'          => $query->applicant_name,
+                'email'         => $query->email
+            ];
         }
-        elseif(auth()->user()->hasRole('User'))
-        {
-            $queries = TOrders::with('car.user')
-                    ->whereHas('car.user', function($query) {
-                        $query->where('user_id', auth()->user()->id);
-                    })
-                    ->get();
 
-            $orders = [];
-            foreach($queries as $query)
-            {
-                $orders[] = [
-                    'id'            => $query->id,
-                    'licence_plate' => $query->car->licence_plate,
-                    'car_name'      => $query->car->name,
-                    'car_owner'     => $query->car->user->first_name.' '.$query->car->user->last_name,
-                    'car_status'    => $query->status
-                ];
-            }
-
-            return DataTables::of($orders)
-            ->addIndexColumn()
-            ->addColumn('car_status', function($orders) {
-                $array = [
-                    "1" => '<span class="badge badge-pill badge-info"> <i class="fas fa-exclamation-triangle"></i> Processing</span>',
-                    "2" => '<span class="badge badge-pill badge-success"> <i class="fas fa-check-square"></i> Completed</span>'
-                ];
-                $fa_active = @$array[$orders['car_status']] ?: null;
-
-                return $fa_active;
-            })
-            ->addColumn('action', function($orders) {
-                $edit = '
-                    <a data-toggle="tooltip" title="View Data" href="'.route('orders.show',['order' => $orders['id']]).'" class="btn btn-outline-info btn-sm"><i class="fas fa-eye"></i></a>
-                ';
-                return $edit;
-            })
-            ->rawColumns(['car_status', 'action'])
-            ->toJson();
-        }
-        else
-        {
-            return abort(403);
-        }
+        return DataTables::of($datas)
+        ->addIndexColumn()
+        ->addColumn('action', function($datas) {
+            $edit = '
+                <a data-toggle="tooltip" title="Edit Data" href="'.route('candidate-management.edit',['candidate_management' => $datas['id']]).'" class="btn btn-outline-info btn-sm"><i class="fas fa-edit"></i></a>
+                <a data-toggle="tooltip" data-placement="top" data-method="DELETE" data-confirm-title="Confirm" data-confirm-text="Are you sure to delete this data?" data-confirm-delete="Delete" title="Delete" href="'.route('candidate-management.destroy',['candidate_management' => $datas['id']]).'" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></a>
+            ';
+            return $edit;
+        })
+        ->rawColumns(['car_status', 'action'])
+        ->toJson();
     }
 
-    public function addDetail($index)
+    public function getTagSkills($id)
     {
-        $services = MServices::pluck('name', 'id');
+        $queries = TCandidate::join('candidate_skills as cs', 'cs.candidate_id', '=', 't_candidate.id')
+                    ->join('m_skills as ms', 'cs.skill_id', '=', 'ms.id')
+                    ->where('cs.candidate_id', $id)
+                    ->get();
 
-        return view('ajax.details', compact('index', 'services'));
+        $tag_skills = [];
+        foreach ($queries as $query)
+        {
+            $tag_skills[] = $query->id;
+            $tag_skills[] = $query->name;
+        }
+
+        return response()->json($tag_skills);
     }
 
     /**
@@ -123,7 +75,7 @@ class CandidateController extends Controller
      */
     public function index()
     {
-        return view('orders.index');
+        return view('candidate.index');
     }
 
     /**
@@ -133,13 +85,11 @@ class CandidateController extends Controller
      */
     public function create()
     {
-        $edit = false;
-        $cars = MCars::with('user:id,first_name,last_name,email')->get();
-        $mechanics = MMechanics::with('user:id,first_name,last_name')
-                    ->where('job_status', 0)
-                    ->get();
+        $countries = Country::select('id', 'name')->get();
+        $skills = MSkills::select('id', 'name')->get();
+        $qualifications = MQualification::select('id', 'name')->get();
 
-        return view('orders.add-edit', compact('cars', 'edit', 'mechanics'));
+        return view('candidate.add', compact('countries', 'skills', 'qualifications'));
     }
 
     /**
@@ -151,44 +101,37 @@ class CandidateController extends Controller
     public function store(CreateRequest $request)
     {
         $inputs = $request->all();
-        $mechanic = $inputs['mechanic_id'];
+        $candidate = new TCandidate;
 
-        $order = new TOrders;
-        $order->car_id      = $inputs['car_id'];
-        $order->notes       = $inputs['notes_order'];
-        $order->start_at    = $inputs['start_at'];
-        $order->save();
+        $candidate->education_qualification_id      = $inputs['education_qualification_id'];
+        $candidate->education_country_id            = $inputs['education_country_id'];
+        $candidate->education_name                  = $inputs['education_name'];
+        $candidate->applicant_name                  = $inputs['applicant_name'];
+        $candidate->birthday                        = $inputs['birthday'];
+        $candidate->experience                      = $inputs['experience'];
+        $candidate->last_position                   = $inputs['last_position'];
+        $candidate->applied_position                = $inputs['applied_position'];
+        $candidate->email                           = $inputs['email'];
+        $candidate->phone                           = $inputs['phone'];
+        $candidate->save();
 
-        // Create order details
-        if(!empty($inputs['service_id']))
+        // File Resume
+        $resume = $request->file('resume');
+        if($resume)
         {
-            $services = $inputs['service_id'];
-            foreach($services as $k => $service)
-            {
-                $detail = new TOrdersDetail;
-                $detail->order_id   = $order->id;
-                $detail->service_id = $inputs['service_id'][$k];
-                $detail->qty        = $inputs['qty'][$k];
-                $detail->notes      = $inputs['notes'][$k];
-                $detail->save();
-            }
+            $upload_files       = $resume->getClientOriginalName();
+            $filename           = pathinfo($upload_files, PATHINFO_FILENAME);
+            $extension          = $resume->getClientOriginalExtension();
+            $filetostore        = $filename.'_'.time().'.'.$extension;
+            $path               = $resume->storeAs('public/upload/files', $filetostore);
+            $candidate->resume  = str_replace("public/upload/", "",$path);
+            $candidate->save();
         }
 
-        // Create new job to mechanics
-        if($mechanic)
-        {
-            $job = new TJobs;
-            $job->mechanic_id   = $mechanic;
-            $job->order_id      = $order->id;
-            $job->save();
+        // Many to many relantionship
+        $candidate->skills()->attach($request->input('skills', null));
 
-            // Update mechanic status
-            $update_mechanic = MMechanics::find($mechanic);
-            $update_mechanic->job_status = 1;
-            $update_mechanic->save();
-        }
-
-        return redirect()->route('orders.index')
+        return redirect()->route('candidate-management.index')
             ->withSuccess('Success submited data');
     }
 
@@ -200,12 +143,10 @@ class CandidateController extends Controller
      */
     public function show($id)
     {
-        $order = TOrders::find($id);
-        $order_details = TOrdersDetail::whereOrderId($id)
-                        ->with('service')
-                        ->get();
+        $datas = TCandidate::find($id);
+        $skills = CandidateSkills::where('candidate_id', $id)->get();
 
-        return view('orders.show', compact('order', 'order_details'));
+        return view('candidate.show', compact('datas', 'skills'));
     }
 
     /**
@@ -216,21 +157,12 @@ class CandidateController extends Controller
      */
     public function edit($id)
     {
-        $edit = true;
-        $cars = MCars::with('user:id,first_name,last_name,email')->get();
-        $order = TOrders::findOrFail($id);
-        $order_details = TOrdersDetail::whereOrderId($id)
-                        ->with('service')
-                        ->get();
-        $jobs = TJobs::whereOrderId($id)->first();
+        $data = TCandidate::findOrFail($id);
+        $countries = Country::select('id', 'name')->get();
+        $skills = MSkills::select('id', 'name')->get();
+        $qualifications = MQualification::select('id', 'name')->get();
 
-        foreach($order_details as $key => $value)
-        {
-            $value->serviceType = $value->service->pluck('name', 'id')->toArray();
-            unset($value->service);
-        }
-
-        return view('orders.add-edit', compact('cars', 'edit', 'order', 'order_details', 'jobs'));
+        return view('candidate.edit', compact('countries', 'data', 'skills', 'qualifications', 'order_details', 'jobs'));
     }
 
     /**
@@ -243,28 +175,35 @@ class CandidateController extends Controller
     public function update(UpdateRequest $request, $id)
     {
         $inputs = $request->all();
+        $candidate = TCandidate::find($id);
 
-        $order = TOrders::find($id);
-        $order->car_id      = $inputs['car_id'];
-        $order->notes       = $inputs['notes_order'];
-        $order->start_at    = $inputs['start_at'];
-        $order->save();
+        $candidate->education_qualification_id      = $inputs['education_qualification_id'];
+        $candidate->education_country_id            = $inputs['education_country_id'];
+        $candidate->education_name                  = $inputs['education_name'];
+        $candidate->applicant_name                  = $inputs['applicant_name'];
+        $candidate->birthday                        = $inputs['birthday'];
+        $candidate->experience                      = $inputs['experience'];
+        $candidate->last_position                   = $inputs['last_position'];
+        $candidate->applied_position                = $inputs['applied_position'];
+        $candidate->email                           = $inputs['email'];
+        $candidate->phone                           = $inputs['phone'];
+        $candidate->save();
 
-        // Update order details
-        if(!empty($inputs['service_id']))
+        // File Resume
+        $resume = $request->file('resume');
+        if($resume)
         {
-            $services = $inputs['service_id'];
-            TOrdersDetail::whereOrderId($id)->delete();
-            foreach($services as $k => $service)
-            {
-                $detail = new TOrdersDetail;
-                $detail->order_id   = $order->id;
-                $detail->service_id = $inputs['service_id'][$k];
-                $detail->qty        = $inputs['qty'][$k];
-                $detail->notes      = $inputs['notes'][$k];
-                $detail->save();
-            }
+            $upload_files       = $resume->getClientOriginalName();
+            $filename           = pathinfo($upload_files, PATHINFO_FILENAME);
+            $extension          = $resume->getClientOriginalExtension();
+            $filetostore        = $filename.'_'.time().'.'.$extension;
+            $path               = $resume->storeAs('public/upload/files', $filetostore);
+            $candidate->resume  = str_replace("public/upload/", "",$path);
+            $candidate->save();
         }
+
+        // Many to many relantionship
+        $candidate->skills()->sync($request->input('skills', null));
 
         return redirect()->back()
             ->withSuccess('Success updated data');
@@ -278,11 +217,33 @@ class CandidateController extends Controller
      */
     public function destroy($id)
     {
-        $order = TOrders::findOrFail($id);
-        TOrdersDetail::whereOrderId($id)->delete();
-        $order->delete();
+        $candidate = TCandidate::findOrFail($id);
+        $candidate->delete();
 
-        return redirect()->route('orders.index')
+        // Delete relantionship
+        $candidate->skills()->detach();
+
+        return redirect()->route('candidate-management.index')
             ->withSuccess('Data deleted!');
+    }
+
+    /**
+     * Delete File Resume.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+    */
+    public function destroyFileResume($id)
+    {
+        $file = TCandidate::findOrFail($id);
+        File::delete(public_path() .'/upload/files/'.$file->resume);
+        $file->resume = null;
+        $file->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Success delete file!'
+        ]);
     }
 }
