@@ -33,8 +33,8 @@
                             <!--end::Mobile menu toggle-->
                             <!--begin::Logo image-->
                             <a href="../../demo10/dist/landing.html">
-                                <img alt="Logo" src="{{ url('frontend_assets/media/logos/laravel-2.svg') }}" class="logo-default h-25px h-lg-50px" />
-                                <img alt="Logo" src="{{ url('frontend_assets/media/logos/laravel-2.svg') }}" class="logo-sticky h-20px h-lg-45px" />
+                                <img alt="Logo" src="{{ url('frontend_assets/media/logos/laravel-2.svg') }}" class="logo-default h-25px h-lg-60px" />
+                                <img alt="Logo" src="{{ url('frontend_assets/media/logos/laravel-2.svg') }}" class="logo-sticky h-20px h-lg-55px" />
                             </a>
                             <!--end::Logo image-->
                         </div>
