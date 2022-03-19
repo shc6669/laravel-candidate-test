@@ -3,7 +3,7 @@
 /**
  * Authentication
  */
-Route::get('login', 'Auth\LoginController@show');
+Route::get('login', 'Auth\LoginController@show')->name('auth.login');
 Route::post('login', 'Auth\LoginController@login');
 Route::get('logout', 'Auth\LoginController@logout')->name('auth.logout');
 
@@ -211,5 +211,5 @@ Route::group(['middleware' => ['auth', 'verified'], 'prefix' => "admin"], functi
 // Frontend
 Route::get('/', [
     'as' => 'home.front',
-    'uses' => 'FrontEndController@index'
+    'uses' => 'LandingPageController@index'
 ]);
