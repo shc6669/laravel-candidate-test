@@ -21,3 +21,15 @@
 .select2-container--default .select2-selection--single .select2-selection__arrow {
     height: 35px !important;
 }
+
+/* Overide Bootstrap File Input */
+.input-group-append .btn, .input-group-prepend .btn {
+    border: 1px solid #ced4da;
+    padding: 0.65rem 1rem;
+}
+// .input-group.file-caption-main {
+//     display: none !important;
+// }
+// .kv-file-upload{
+//     display: none !important;
+// }

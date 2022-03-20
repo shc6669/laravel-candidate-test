@@ -2,6 +2,7 @@
 
 namespace Vanguard\Http\Controllers\Web;
 
+use Illuminate\Support\Str;
 use Vanguard\Http\Controllers\Controller;
 use Vanguard\Http\Requests\Candidate\CreateRequest;
 use Vanguard\Http\Requests\Candidate\UpdateRequest;
@@ -26,7 +27,7 @@ class CandidateController extends Controller
 
     public function getData()
     {
-        $queries = TCandidate::latest();
+        $queries = TCandidate::latest()->get();
 
         $datas = [];
         foreach($queries as $query)
@@ -38,17 +39,37 @@ class CandidateController extends Controller
             ];
         }
 
-        return DataTables::of($datas)
-        ->addIndexColumn()
-        ->addColumn('action', function($datas) {
-            $edit = '
-                <a data-toggle="tooltip" title="Edit Data" href="'.route('candidate-management.edit',['candidate_management' => $datas['id']]).'" class="btn btn-outline-info btn-sm"><i class="fas fa-edit"></i></a>
-                <a data-toggle="tooltip" data-placement="top" data-method="DELETE" data-confirm-title="Confirm" data-confirm-text="Are you sure to delete this data?" data-confirm-delete="Delete" title="Delete" href="'.route('candidate-management.destroy',['candidate_management' => $datas['id']]).'" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></a>
-            ';
-            return $edit;
-        })
-        ->rawColumns(['car_status', 'action'])
-        ->toJson();
+        if(auth()->user()->hasRole('Admin_HRD'))
+        {
+            return DataTables::of($datas)
+            ->addIndexColumn()
+            ->addColumn('action', function($datas) {
+                $edit = '
+                    <a data-toggle="tooltip" title="Edit Data" href="'.route('candidate-management.edit',['candidate_management' => $datas['id']]).'" class="btn btn-outline-info btn-sm"><i class="fas fa-edit"></i></a>
+                    <a data-toggle="tooltip" data-placement="top" data-method="DELETE" data-confirm-title="Confirm" data-confirm-text="Are you sure to delete this data?" data-confirm-delete="Delete" title="Delete" href="'.route('candidate-management.destroy',['candidate_management' => $datas['id']]).'" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></a>
+                ';
+                return $edit;
+            })
+            ->rawColumns(['action'])
+            ->toJson();
+        }
+        else if(auth()->user()->hasRole('HRD'))
+        {
+            return DataTables::of($datas)
+            ->addIndexColumn()
+            ->addColumn('name', function($datas) {
+                $edit = '
+                    <a data-toggle="tooltip" title="Show Data" href="'.route('candidate-management.show',['candidate_management' => $datas['id']]).'">'.$datas['name'].'</a>
+                ';
+                return $edit;
+            })
+            ->rawColumns(['name'])
+            ->toJson();
+        }
+        else
+        {
+            return abort(403);
+        }
     }
 
     public function getTagSkills($id)
@@ -122,9 +143,9 @@ class CandidateController extends Controller
             $upload_files       = $resume->getClientOriginalName();
             $filename           = pathinfo($upload_files, PATHINFO_FILENAME);
             $extension          = $resume->getClientOriginalExtension();
-            $filetostore        = $filename.'_'.time().'.'.$extension;
+            $filetostore        = Str::slug($filename, "-").'_'.time().'.'.$extension;
             $path               = $resume->storeAs('public/upload/files', $filetostore);
-            $candidate->resume  = str_replace("public/upload/", "",$path);
+            $candidate->resume  = str_replace('public/upload/files/', '',$path);
             $candidate->save();
         }
 
@@ -196,9 +217,9 @@ class CandidateController extends Controller
             $upload_files       = $resume->getClientOriginalName();
             $filename           = pathinfo($upload_files, PATHINFO_FILENAME);
             $extension          = $resume->getClientOriginalExtension();
-            $filetostore        = $filename.'_'.time().'.'.$extension;
+            $filetostore        = Str::slug($filename, "-").'_'.time().'.'.$extension;
             $path               = $resume->storeAs('public/upload/files', $filetostore);
-            $candidate->resume  = str_replace("public/upload/", "",$path);
+            $candidate->resume  = str_replace('public/upload/files/', '',$path);
             $candidate->save();
         }
 

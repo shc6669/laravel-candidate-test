@@ -35,10 +35,12 @@
                     <table class="table table-borderless table-hover" id="candidate-table-wrapper">
                         <thead class="thead-dark">
                             <tr>
-                                <th></th>
+                                <th class="w-20"></th>
                                 <th class="min-width-80">@lang('Applicant Name')</th>
                                 <th class="min-width-80">@lang('Applicant Email')</th>
+                                @if(auth()->user()->hasRole('Admin_HRD'))
                                 <th class="min-width-90">@lang('Action')</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -60,7 +62,9 @@
             {data: "DT_RowIndex", orderable:false, filter: false, searchable: false},
             {data: "name", name:"name", orderable:false, filter: false},
             {data: "email", name:"email", orderable:false, filter: false},
+            @if(auth()->user()->hasRole('Admin_HRD'))
             {data: "action", name: "action",orderable: false, searchable: false}
+            @endif
         ];
 
         var Datatable = {

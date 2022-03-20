@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
-@section('page-title', 'Manage Orders')
-@section('page-heading', $edit ? $order->car->licence_plate : 'Manage Orders')
+@section('page-title', 'Manage Data')
+@section('page-heading', 'Manage Data - Candidate Management')
 
 @section('breadcrumbs')
     <li class="breadcrumb-item">
-        <a href="{{ route('orders.index') }}">@lang('Car Repair Management')</a>
+        <a href="{{ route('candidate-management.index') }}">@lang('Candidate Management')</a>
     </li>
     <li class="breadcrumb-item active">
-        {{ $edit ? 'Edit Data' : 'Create Data' }}
+        Create Data
     </li>
 @stop
 
@@ -16,203 +16,119 @@
 
 @include('partials.messages')
 
-@if($edit)
-    {!! Form::open(['route' => ['orders.update', $order->id], 'method' => 'PUT', 'id' => 'order-form']) !!}
-@else
-    {!! Form::open(['route' => 'orders.store', 'id' => 'order-form']) !!}
-@endif
-
-<input type="hidden" name="id" value="{{ $edit ? $order->id : null }}">
+{!! Form::open(['route' => 'candidate-management.store', 'id' => 'candidate-form', 'enctype' => 'multipart/form-data']) !!}
 
 <div class="card">
     <div class="card-body">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <h5 class="card-title">
-                    @lang('Car Repair Management')
+                    @lang('Applicant Form')
                 </h5>
-                <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip" title="Back" onclick="window.location.href='{{ route('orders.index') }}'">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip" title="Back" onclick="window.location.href='{{ route('candidate-management.index') }}'">
                     <span>
                         <i class="fa fa-arrow-left"></i> Back
                     </span>
                 </button>
             </div>
-            <div class="col-md-9">
-                @if($edit)
-                    <h5 class="card-title">
-                        This work is handled by
-                        <strong>
-                            {{$jobs->mechanic->user->first_name}} {{$jobs->mechanic->user->last_name}}
-                        </strong>
-                    </h5>
-                    <div>
-                        <strong>Status </strong>:
-                        @if($order->status == 1)
-                            <span class="badge badge-pill badge-info">
-                                <i class="fas fa-exclamation-triangle"></i> Processing
-                            </span>
-                        @else
-                            <span class="badge badge-pill badge-success">
-                                <i class="fas fa-check-square"></i> Completed
-                            </span>
-                        @endif
-                    </div>
-                @endif
+            <div class="col-md-5">
                 <div class="form-group">
-                    <label for="car_id">@lang('Car')</label>
-                    <select class="form-control input-solid" id="car_id" name="car_id">
+                    <label for="education_qualification_id">@lang('Education Qualification')</label>
+                    <select class="form-control input-solid" id="education_qualification_id" name="education_qualification_id">
                         <option></option>
-                        @foreach($cars as $car)
-                            <option value="{{$car->id}}" {{$edit && ($car->id == $order->car_id) ? 'selected': '' }}>{{$car->licence_plate}} | {{$car->name}} | {{$car->user->first_name}} {{$car->user->last_name}}</option>
+                        @foreach($qualifications as $qualification)
+                            <option value="{{$qualification->id}}">{{$qualification->name}}</option>
                         @endforeach
                     </select>
                 </div>
-                @if(!$edit)
                 <div class="form-group">
-                    <label for="mechanic_id">@lang('Mechanic')</label>
-                    <select class="form-control input-solid" id="mechanic_id" name="mechanic_id">
+                    <label for="education_name">@lang('Education Name')</label>
+                    <input type="text" class="form-control" id="education_name" name="education_name" placeholder="@lang('Please input name')">
+                </div>
+                <div class="form-group">
+                    <label for="applicant_name">@lang('Applicant Name')</label>
+                    <input type="text" class="form-control" id="applicant_name" name="applicant_name" placeholder="@lang('Please input applicant name')">
+                </div>
+                <div class="form-group">
+                    <label for="email">@lang('Applicant Email')</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="@lang('Please input email')">
+                </div>
+                <div class="form-group">
+                    <label for="applied_position">@lang('Applied Position')</label>
+                    <input type="text" class="form-control" id="applied_position" name="applied_position" placeholder="@lang('Please input applied position')">
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label for="education_country_id">@lang('Education Country')</label>
+                    <select class="form-control input-solid" id="education_country_id" name="education_country_id">
                         <option></option>
-                        @foreach($mechanics as $mechanic)
-                            <option value="{{$mechanic->id}}">{{$mechanic->user->first_name}} {{$mechanic->user->last_name}}</option>
+                        @foreach($countries as $country)
+                            <option value="{{$country->id}}">{{$country->name}}</option>
                         @endforeach
                     </select>
                 </div>
-                @endif
                 <div class="form-group">
-                    <label for="start_at">@lang('Start Date')</label>
+                    <label for="experience">@lang('Experience (in years)')</label>
+                    <input type="number" class="form-control" id="experience" name="experience" placeholder="@lang('Please input how many experience (in years)')">
+                </div>
+                <div class="form-group">
+                    <label for="birthday">@lang('Applicant Birthday')</label>
                     <div class="form-group">
-                        <input type="text"
-                               name="start_at"
-                               id='start_at'
-                               value="{{ $edit && $order->start_at ? $order->start_at : old('start_at') }}"
-                               class="form-control input-solid" />
+                        <input type="text" name="birthday" id='birthday' class="form-control input-solid" />
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="notes_order">@lang('Notes')</label>
-                    <textarea name="notes_order"
-                              id="notes_order"
-                              rows="5"
-                              class="form-control input-solid">{{ $edit ? $order->notes : old('notes') }}</textarea>
+                    <label for="phone">@lang('Applicant Phone')</label>
+                    <input type="number" class="form-control" id="phone" name="phone" placeholder="@lang('Please input phone')">
+                </div>
+                <div class="form-group">
+                    <label for="last_position">@lang('Last Position')</label>
+                    <input type="text" class="form-control" id="last_position" name="last_position" placeholder="@lang('Please input last position')">
                 </div>
             </div>
         </div>
-        <div class="row pt-sm-4">
-            <div class="col-md-3"></div>
-            <div class="col-md-9 mb-2">
-                <label id="btnAdd" class="btn btn-sm btn-outline-primary" onclick="addDetail()">
-                    <span>
-                        <i class="fas fa-plus"></i> Add Order Details
-                    </span>
-                </label>
+
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-10">
+                <div class="form-group">
+                    <label for="skills">@lang('Skills')</label>
+                    <select class="form-control input-solid" id="skills" name="skills[]" multiple="multiple">
+                        <option value=""></option>
+                        @foreach($skills as $skill)
+                            <option value="{{ $skill->id }}">{{ $skill->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
         </div>
-        @if($edit)
-            <input type="hidden" value="{{count($order_details)}}" name="details_sums">
-            @foreach($order_details as $key => $detail)
-                <div class="row removable">
-                    <div class="col-md-3"></div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="service_id{{$key}}">@lang('Service')</label>
-                            <select class="form-control input-solid" id="service_id{{$key}}" name="service_id[{{$key}}]">
-                                <option value=""></option>
-                                @foreach($detail->serviceType as $k => $v)
-                                    <option value="{{ $k }}" {{ $detail->service_id == $k ? 'selected' : '' }}>{{ $v }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="qty{{$key}}">@lang('Qty')</label>
-                            <input type="number" value="{{$detail->qty}}" class="form-control input-solid" id="qty{{$key}}" name="qty[{{$key}}]">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="notes{{$key}}">@lang('Notes')</label>
-                            <input type="text" value="{{$detail->notes}}" class="form-control input-solid" id="notes{{$key}}" name="notes[{{$key}}]">
-                        </div>
-                    </div>
-                    <div class="col-md-1 pt-4">
-                        <label class="btnRmv">
-                            <span class="info-2">
-                                <i class="fas fa-trash"></i>
-                            </span>
-                        </label>
-                    </div>
+
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-10">
+                <div class="form-group">
+                    <label for="resume">@lang('Resume')</label>
+                    <input data-theme="fas" id="resume" name="resume" type="file">
                 </div>
-            @endforeach
-        @endif
-        <div id="order_details">
-            {{-- Ajax --}}
+            </div>
         </div>
-        <div class="row pt-sm-4">
-            <div class="col-md-3"></div>
-            <div class="col-md-9">
+    
+        <div class="row pt-sm-2">
+            <div class="col-md-2"></div>
+            <div class="col-md-10">
                 <button type="submit" class="btn btn-outline-success">
-                    {{ $edit ? 'Update data' : 'Submit data' }}
+                    Submit data
                 </button>
             </div>
         </div>
     </div>
 </div>
 {!! Form::close() !!}
-
 <br>
 @stop
 
 @section('scripts')
-    @if($edit)
-        {!! JsValidator::formRequest('Vanguard\Http\Requests\Orders\UpdateRequest', '#order-form') !!}
-        <script>
-            let idx = parseFloat($("input[name='details_sums']").val()) - 1;
-            function addDetail()
-            {
-                idx++;
-
-                $.ajax({
-                    url: '/orders/html/' + idx,
-                    dataType: 'html',
-                    beforeSend: function(){
-                        console.log('waiting...');
-                    }
-                }).done(function(html){
-                    console.clear();
-                    $("#order_details").append(html);
-                });
-            }
-
-            // Select2
-            @foreach($order_details as $key => $detail)
-                $("#service_id{{ $key }}").select2({"allowClear":true,"placeholder":{"id":"","text":"Please Select Option"}});
-            @endforeach
-
-            $(".btnRmv").on("click", function(){
-                $(this).closest('div.removable').remove();
-            });
-        </script>
-    @else
-        {!! JsValidator::formRequest('Vanguard\Http\Requests\Orders\CreateRequest', '#order-form') !!}
-        <script>
-            let idx = 0;
-            function addDetail()
-            {
-                $.ajax({
-                    url: '/orders/html/' + idx,
-                    dataType: 'html',
-                    beforeSend: function(){
-                        console.log('waiting...');
-                    }
-                }).done(function(html){
-                    console.clear();
-                    $("#order_details").append(html);
-                });
-
-                idx++;
-            }
-        </script>
-    @endif
+    {!! JsValidator::formRequest('Vanguard\Http\Requests\Candidate\CreateRequest', '#candidate-form') !!}
     {!! HTML::script('assets/js/as/custom.js') !!}
 @stop

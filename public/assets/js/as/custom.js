@@ -1,11 +1,21 @@
+// File Input
+$('#resume').fileinput({
+    allowedFileTypes: ['pdf'],
+    showUpload: false,
+    dropZoneEnabled: false,
+    maxFileCount: 10,
+    inputGroupClass: "input-group-sm",
+    theme: 'fas',
+    language: 'en'
+});
+
 // Datepicker
-$('#start_at').datepicker({
+$('#birthday').datepicker({
     orientation: 'bottom',
     startView: 'month',
     format: 'yyyy-mm-dd'
 });
 
 // Select2
-$("#car_id").select2({"allowClear":true,"placeholder":{"id":"","text":"Please Select Option"}});
-$("#mechanic_id").select2({"allowClear":true,"placeholder":{"id":"","text":"Please Select Option"}});
-$("#user_id").select2({"allowClear":true,"placeholder":{"id":"","text":"Please Select Option"}})
+$("#education_qualification_id, #education_country_id").select2({"allowClear":true,"placeholder":{"id":"","text":"Please Select Option"}});
+$("#skills").select2({"allowClear":true,"placeholder":{"id":"","text":"You can select more than one options"}});

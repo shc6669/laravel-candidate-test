@@ -9,7 +9,7 @@ class TCandidate extends Model
 {
     use HasFactory;
 
-    protected $table = "t_orders";
+    protected $table = "t_candidate";
 
     protected $fillable = [
         'education_qualification_id', 
