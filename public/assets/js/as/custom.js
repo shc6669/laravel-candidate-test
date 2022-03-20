@@ -1,14 +1,3 @@
-// File Input
-$('#resume').fileinput({
-    allowedFileTypes: ['pdf'],
-    showUpload: false,
-    dropZoneEnabled: false,
-    maxFileCount: 10,
-    inputGroupClass: "input-group-sm",
-    theme: 'fas',
-    language: 'en'
-});
-
 // Datepicker
 $('#birthday').datepicker({
     orientation: 'bottom',

@@ -164,10 +164,12 @@ class CandidateController extends Controller
      */
     public function show($id)
     {
-        $datas = TCandidate::find($id);
-        $skills = CandidateSkills::where('candidate_id', $id)->get();
+        $data = TCandidate::find($id);
+        $skills = CandidateSkills::where('candidate_id', $id)
+                    ->join('m_skills as ms', 'ms.id', '=', 'skill_id')
+                    ->pluck('name');
 
-        return view('candidate.show', compact('datas', 'skills'));
+        return view('candidate.show', compact('data', 'skills'));
     }
 
     /**

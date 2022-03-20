@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('page-title', 'Manage Orders')
+@section('page-title', 'Manage Candidate')
 @section('page-heading', $data->applicant_name)
 
 @section('breadcrumbs')
@@ -211,7 +211,7 @@
             initialPreviewConfig: [
                 {
                     caption: '{{ $data->name }}',
-                    width: '150px',s
+                    width: '150px',
                     url: "{{ route('delete.file', $data->id) }}",
                     key: {{ $data->id }},
                     extra: {
