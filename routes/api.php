@@ -33,7 +33,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
     Route::get('stats', 'StatsController@index');
 
-    Route::apiResource('users', 'Users\UsersController')->except('show');
+    // Route::apiResource('users', 'Users\UsersController')->except('show');
     Route::get('users/{userId}', 'Users\UsersController@show');
 
     Route::post('users/{user}/avatar', 'Users\AvatarController@update');
@@ -51,13 +51,13 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('/sessions/{session}', 'SessionsController@show');
     Route::delete('/sessions/{session}', 'SessionsController@destroy');
 
-    Route::apiResource('roles', 'Authorization\RolesController')->except('show');
+    // Route::apiResource('roles', 'Authorization\RolesController')->except('show');
     Route::get('/roles/{roleId}', 'Authorization\RolesController@show');
 
     Route::get("roles/{role}/permissions", 'Authorization\RolePermissionsController@show');
     Route::put("roles/{role}/permissions", 'Authorization\RolePermissionsController@update');
 
-    Route::apiResource('permissions', 'Authorization\PermissionsController');
+    // Route::apiResource('permissions', 'Authorization\PermissionsController');
 
     Route::get('/settings', 'SettingsController@index');
 
