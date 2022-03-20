@@ -61,7 +61,24 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
     Route::get('/settings', 'SettingsController@index');
 
+    // List Country
     Route::get('/countries', 'CountriesController@index');
 
-    Route::get('/listAll', 'RESTController@listAll');
+    // List Skills
+    Route::get('/list-skill', 'RESTController@listSkill');
+    
+    // List Qualification
+    Route::get('/list-qualification', 'RESTController@listQualifications');
+
+    // List All Data Candidate
+    Route::get('/list-all-candidate', 'RESTController@listData');
+
+    // Create Data
+    Route::post('/data-candidate', 'RESTController@storeData');
+
+    // Update Data
+    Route::put('/data-candidate/{id}', 'RESTController@updateData');
+
+    // Delete Data
+    Route::delete('data-candidate/{id}', 'RESTController@destroyData');
 });

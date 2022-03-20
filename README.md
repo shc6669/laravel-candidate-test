@@ -9,6 +9,7 @@
 - Copy and paste .env.example. And rename it to ".env"
 - In .env file, matching to your database environment. Start from "DB_DATABASE, DB_USERNAME, DB_PASSWORD" 
 - Import raw database in folder "Database" with filename "database.sql" to your database
+- Create storage link with syntax "php artisan storage:link"
 - Run with syntax "php artisan serve"
 
 # Backend Access
@@ -30,4 +31,5 @@ HRD Role
 - username: john.wick
 - password: password123
 
-# API Documentation
+# API Accessible
+- Copy variable '#EXPOSE_API=true' in .env.example to 'EXPOSE_API=true', to your .env.

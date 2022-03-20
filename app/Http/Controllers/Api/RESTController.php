@@ -2,84 +2,158 @@
 
 namespace Vanguard\Http\Controllers\Api;
 
-use Vanguard\Http\Requests\Api\REST\ListRequest;
-use Vanguard\Http\Resources\CarsResource;
-use Vanguard\Http\Resources\JobsResource;
-use Vanguard\Http\Resources\MechanicsResource;
-use Vanguard\Http\Resources\OrdersResource;
-use Vanguard\Http\Resources\ServicesResource;
-use Vanguard\MMechanics;
-use Vanguard\MCars;
-use Vanguard\MServices;
-use Vanguard\TJobs;
-use Vanguard\TOrders;
-use Vanguard\TOrdersDetail;
+use Illuminate\Support\Str;
+use Vanguard\Http\Requests\Api\REST\CreateRequest;
+use Vanguard\Http\Requests\Api\REST\UpdateRequest;
+use Vanguard\Http\Resources\ListDataResource;
+use Vanguard\Http\Resources\DestroyResource;
+use Vanguard\Http\Resources\SkillsResource;
+use Vanguard\Http\Resources\QualificationsResource;
+use Vanguard\MSkills;
+use Vanguard\MQualification;
+use Vanguard\TCandidate;
+use Storage;
 
 class RESTController extends ApiController
 {
-     /**
-     * Type List
-     */
-    public function getTypeList($type)
+    public function __construct()
     {
-        $arrays = [
-            1   => "Mechanics",
-            2   => "Car Owners",
-            3   => "Services",
-            4   => "Car Management",
-            5   => "Job Management"
-        ];
-
-        foreach($arrays as $key => $array)
-        {
-            if($key == $type)
-            {
-                return $array;
-            }
-        }
-
-        return abort(422);
+        $this->middleware('auth');
+        $this->middleware('permission:candidate.create', ['only' => ['storeData']]);
+        $this->middleware('permission:candidate.edit', ['only' => ['updateData']]);
+        $this->middleware('permission:candidate.list.show', ['only' => ['listData']]);
+        $this->middleware('permission:candidate.destroy', ['only' => 'destroyData']);
     }
 
     /**
-     * List All
+     * List All Skills
      */
-    public function listAll(ListRequest $request)
+    public function listSkill()
     {
-        $inputs = $request->only(['list']);
-        $list = $inputs['list'];
+        $queries = MSkills::get();
 
-        $type = $this->getTypeList($list);
+        return SkillsResource::collection($queries);
+    }
 
-        if($list == 1)
+    /**
+     * List All Qualifications
+     */
+    public function listQualifications()
+    {
+        $queries = MQualification::get();
+
+        return QualificationsResource::collection($queries);
+    }
+
+    /**
+     * List Data
+     */
+    public function listData()
+    {
+        $queries = TCandidate::with(['country:id,name', 'qualification:id,name'])->get();
+
+        return ListDataResource::collection($queries);
+    }
+    
+
+    /**
+     * Store Data
+     */
+    public function storeData(CreateRequest $request)
+    {
+        $inputs = $request->all();
+        $candidate = new TCandidate;
+
+        // Required Input
+        $candidate->education_qualification_id      = $inputs['education_qualification_id'];
+        $candidate->education_country_id            = $inputs['education_country_id'];
+        $candidate->education_name                  = $inputs['education_name'];
+        $candidate->applicant_name                  = $inputs['applicant_name'];
+        $candidate->experience                      = $inputs['experience'];
+        $candidate->last_position                   = $inputs['last_position'];
+        $candidate->applied_position                = $inputs['applied_position'];
+        
+        // Optional Input
+        $candidate->birthday                        = $request->input('birthday', null);
+        $candidate->email                           = $request->input('email', null);
+        $candidate->phone                           = $request->input('phone', null);
+        $candidate->save();
+
+        // File Resume
+        $resume = $request->file('resume');
+        if($resume)
         {
-            $queries = MMechanics::get();
-
-            return MechanicsResource::collection($queries);
+            $upload_files       = $resume->getClientOriginalName();
+            $filename           = pathinfo($upload_files, PATHINFO_FILENAME);
+            $extension          = $resume->getClientOriginalExtension();
+            $filetostore        = Str::slug($filename, "-").'_'.time().'.'.$extension;
+            $path               = $resume->storeAs('public/upload/files', $filetostore);
+            $candidate->resume  = str_replace('public/upload/files/', '',$path);
+            $candidate->save();
         }
-        elseif($list == 2)
+
+        // Many to many relantionship
+        $candidate->skills()->attach($request->input('skills', null));
+
+        return new ListDataResource($candidate);
+    }
+
+    /**
+     * Update Data
+     */
+    public function updateData(UpdateRequest $request, $id)
+    {
+        $inputs = $request->all();
+        $candidate = TCandidate::find($id);
+
+        // Required Input
+        $candidate->education_qualification_id      = $inputs['education_qualification_id'];
+        $candidate->education_country_id            = $inputs['education_country_id'];
+        $candidate->education_name                  = $inputs['education_name'];
+        $candidate->applicant_name                  = $inputs['applicant_name'];
+        $candidate->experience                      = $inputs['experience'];
+        $candidate->last_position                   = $inputs['last_position'];
+        $candidate->applied_position                = $inputs['applied_position'];
+
+        // Optional Input
+        $candidate->birthday                        = $request->input('birthday', null);
+        $candidate->email                           = $request->input('email', null);
+        $candidate->phone                           = $request->input('phone', null);
+        $candidate->save();
+
+        // File Resume
+        $resume = $request->file('resume');
+        if($resume)
         {
-            $queries = MCars::get();
-
-            return CarsResource::collection($queries);
+            $upload_files       = $resume->getClientOriginalName();
+            $filename           = pathinfo($upload_files, PATHINFO_FILENAME);
+            $extension          = $resume->getClientOriginalExtension();
+            $filetostore        = Str::slug($filename, "-").'_'.time().'.'.$extension;
+            $path               = $resume->storeAs('public/upload/files', $filetostore);
+            $candidate->resume  = str_replace('public/upload/files/', '',$path);
+            $candidate->save();
         }
-        elseif($list == 3)
-        {
-            $queries = MServices::get();
 
-            return ServicesResource::collection($queries);
-        }
-        elseif($list == 4)
-        {
-            $queries = TOrders::with('car')->get();
+        // Many to many relantionship
+        $candidate->skills()->sync($request->input('skills', null));
 
-            return OrdersResource::collection($queries);
-        }
-        elseif($list == 5)
-        {
-            $queries = TJobs::with(['mechanic', 'order'])->get();
+        return new ListDataResource($candidate);
+    }
 
-            return JobsResource::collection($queries);
-        }
+    /**
+     * Delete Data
+     */
+    public function destroyData($id)
+    {
+        $candidate = TCandidate::findOrFail($id);
+        $candidate->delete();
+        
+        // Delete Files
+        Storage::delete('public/upload/files/'.$candidate->resume);
+
+        // Delete relantionship
+        $candidate->skills()->detach();
+
+        return new DestroyResource($candidate);
     }
 }
