@@ -109,7 +109,10 @@
             <div class="col-md-10">
                 <div class="form-group">
                     <label for="resume">@lang('Resume')</label>
-                    <input data-theme="fas" id="resume" name="resume" type="file">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="customFile" name="resume">
+                        <label class="custom-file-label" for="customFile">Choose file</label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -131,4 +134,10 @@
 @section('scripts')
     {!! JsValidator::formRequest('Vanguard\Http\Requests\Candidate\CreateRequest', '#candidate-form') !!}
     {!! HTML::script('assets/js/as/custom.js') !!}
+    <script type="text/javascript">
+        // Custom Fileinput Bootstrap
+        $(document).ready(function () {
+            bsCustomFileInput.init();
+        })
+    </script>
 @stop

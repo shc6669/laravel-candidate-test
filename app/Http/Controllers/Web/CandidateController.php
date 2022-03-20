@@ -12,7 +12,7 @@ use Vanguard\MSkills;
 use Vanguard\MQualification;
 use Vanguard\TCandidate;
 use DataTables;
-use File;
+use Storage;
 
 class CandidateController extends Controller
 {
@@ -183,7 +183,7 @@ class CandidateController extends Controller
         $skills = MSkills::select('id', 'name')->get();
         $qualifications = MQualification::select('id', 'name')->get();
 
-        return view('candidate.edit', compact('countries', 'data', 'skills', 'qualifications', 'order_details', 'jobs'));
+        return view('candidate.edit', compact('countries', 'data', 'skills', 'qualifications'));
     }
 
     /**
@@ -240,6 +240,9 @@ class CandidateController extends Controller
     {
         $candidate = TCandidate::findOrFail($id);
         $candidate->delete();
+        
+        // Delete Files
+        Storage::delete('public/upload/files/'.$candidate->resume);
 
         // Delete relantionship
         $candidate->skills()->detach();
@@ -258,7 +261,7 @@ class CandidateController extends Controller
     public function destroyFileResume($id)
     {
         $file = TCandidate::findOrFail($id);
-        File::delete(public_path() .'/upload/files/'.$file->resume);
+        Storage::delete('public/upload/files/'.$file->resume);
         $file->resume = null;
         $file->save();
 
