@@ -5,6 +5,7 @@ namespace Vanguard\Http\Controllers\Api;
 use Illuminate\Support\Str;
 use Vanguard\Http\Requests\Api\REST\CreateRequest;
 use Vanguard\Http\Requests\Api\REST\UpdateRequest;
+use Vanguard\Http\Resources\ListAllResource;
 use Vanguard\Http\Resources\ListDataResource;
 use Vanguard\Http\Resources\DestroyResource;
 use Vanguard\Http\Resources\SkillsResource;
@@ -52,7 +53,34 @@ class RESTController extends ApiController
     {
         $queries = TCandidate::with(['country:id,name', 'qualification:id,name'])->get();
 
-        return ListDataResource::collection($queries);
+        $json = [];
+        foreach($queries as $key => $query)
+        {
+            $json[] = [
+                'id'                            => $query->id,
+                'applicant_name'                => $query->applicant_name,
+                'birthday'                      => $query->birthday,
+                'email'                         => $query->email,
+                'phone'                         => $query->phone,
+                'experience'                    => $query->experience,
+                'last_position'                 => $query->last_position,
+                'applied_position'              => $query->applied_position,
+                'education_qualification_id'    => $query->education_qualification_id,
+                'education_country_id'          => $query->education_country_id,
+                'education_name'                => $query->education_name,
+                'education_qualification_name'  => $query->qualification->name,
+                'education_country_name'        => $query->country->name,
+                'skills'                        => []
+            ];
+
+            $skills = $query->skills()->where('candidate_id', $query->id)->get();
+            foreach($skills as $skill)
+            {
+                $json[$key]['skills'][] = $skill['name'];
+            }
+        }
+
+        return ListAllResource::collection($json);
     }
     
 

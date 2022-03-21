@@ -30,6 +30,7 @@ class ListDataResource extends JsonResource
                 'countryName'       => $this->country->name,
                 'instituteName'     => $this->education_name
             ],
+            'skills'                => $this->skills
         ];
     }
 }
